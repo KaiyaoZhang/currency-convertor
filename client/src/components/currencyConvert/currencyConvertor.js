@@ -39,7 +39,7 @@ class CurrencyConvertor extends Component {
         const res = await fetch(`http://127.0.0.1:8001/api/v1/exchangeRates/${this.state.fromCurrencySelect}`);
         const data = await res.json();
         if(data.resultLength === 0){
-            alert('No exchange Rate on this day!')
+            alert('No exchange rate on this day!')
         }
         this.setState({
             exchangeRate: data.exchangeRate,
@@ -53,7 +53,7 @@ class CurrencyConvertor extends Component {
         const res = await fetch(`http://127.0.0.1:8001/api/v1/exchangeRatesWithdate?date=${date}&currencyCode=${fromCurrencySelect}`)
         const data = await res.json();
         if(data.resultLength === 0){
-            alert('No exchange Rate on this day!')
+            alert('No exchange rate on this day!')
         }
         this.setState({
             exchangeRate: data.exchangeRate,
