@@ -25,6 +25,12 @@ class Nav extends Component {
                             as={NavLink}
                             to='/convertor'
                         />
+                        <Menu.Item
+                            name='About this App'
+                            active={activeItem === 'HOC'}
+                            as={NavLink}
+                            to='/hoc'
+                        />
                     </Menu>
                 </Container>
             </Segment>

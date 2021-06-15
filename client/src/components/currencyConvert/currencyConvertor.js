@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import moment from 'moment';
 import { Dimmer, Loader, Form } from 'semantic-ui-react';
+import { getExchangeRate } from '../../redux/currencyConvert.js/actions';
+import { message } from 'antd';
+import 'antd/dist/antd.css';
 
 const currencyOptions = ['USD', 'EUR', 'JPY', 'GBP', 'AUD', 'CHF', 'CNY', 'HKD', 'MXN', 'INR'];
 
@@ -50,22 +54,23 @@ class CurrencyConvertor extends Component {
     fetchExchangeRateWithDate = async() => {
         const {date, fromCurrencySelect} = this.state
         this.setState({isLoading: true})
-        const res = await fetch(`http://127.0.0.1:8001/api/v1/exchangeRatesWithdate?date=${date}&currencyCode=${fromCurrencySelect}`)
-        const data = await res.json();
-        if(data.resultLength === 0){
-            alert('No exchange rate on this day!')
+        this.props.getExchangeRate(date, fromCurrencySelect)
+    }
+
+    componentWillReceiveProps = (nextProps, nextState) => {
+        if (nextProps.Rate.rate !== this.props.Rate.rate) {
+            this.setState({
+                exchangeRate: nextProps.Rate.rate,
+                isLoading: false
+            })
         }
-        this.setState({
-            exchangeRate: data.exchangeRate,
-            isLoading: false
-        })
     }
 
     componentDidMount = () => {
         this.fetchExchangeRate();
     }  
 
-    componentDidUpdate = async(prevProps, prevState) => {
+    componentDidUpdate = async (prevProps, prevState) => {
         if(prevState.date !== this.state.date){
             this.fetchExchangeRateWithDate();
         }
@@ -96,7 +101,7 @@ class CurrencyConvertor extends Component {
 
     handleOnSelect = (value, key) => {
         this.setState({ [key]: value });
-      };
+    };
 
     render() {
         let fromCurrencyNumber, toCurrencyNumber;
@@ -180,4 +185,16 @@ class CurrencyConvertor extends Component {
     }
 };
 
-export default CurrencyConvertor;
+const mapStateToProps = (state) => {
+    return {
+        Rate: state.RateReducer
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getExchangeRate: (date, fromCurrencySelect) => dispatch(getExchangeRate(date, fromCurrencySelect))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CurrencyConvertor);
